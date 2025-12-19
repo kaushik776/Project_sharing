@@ -1,3 +1,33 @@
+"""
+PIT STOP - F1 Strategy & Telemetry Simulator Application.
+
+This module serves as the main entry point for the Flask web application.
+It defines the core routing logic, handling user requests for the Strategy
+Simulator and Telemetry Dashboard. It acts as the controller, bridging the
+frontend HTML templates with the backend data processing utilities.
+
+Key Components:
+    - Routes:
+        - /: Homepage rendering.
+        - /simulator: Handles race strategy predictions and track mapping
+          (GET/POST).
+        - /telemetry: Handles driver comparisons, speed traces, and pace
+          analysis (GET/POST).
+    - Visualization: Uses Plotly to generate interactive JSON graphs passed
+       to the frontend.
+
+Dependencies:
+    - Flask: Web framework for handling HTTP requests and templating.
+    - plotly: For generating interactive race charts and maps.
+    - utils.f1_data: Custom module for backend data extraction, ML prediction.
+
+Usage:
+    Run this file directly to start the development server:
+    $ python app.py
+
+Author: [Your Name/Team Name]
+Version: 1.0
+"""
 import json
 import plotly
 import plotly.graph_objs as go
