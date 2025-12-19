@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Telemetry Dashboard</h2>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="card p-4 mb-4">
+    <form method="POST" action="{{ url_for('telemetry') }}" class="row g-3">
+        <div class="col-md-2">
+            <label class="form-label text-muted">Season</label>
+            <select name="year" class="form-select">
+                {% for y in years %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label text-muted">Grand Prix</label>
+            <select name="track" class="form-select">
+                {% for t in tracks %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+            </select>
+        </div>
+        <input type="hidden" name="race" id="raceInput"> 
+        <div class="col-md-2">
+            <label class="form-label text-muted">Driver 1 (Blue)</label>
+            <select name="driver1" class="form-select">
+                <option value="VER" selected>VER</option>
+                {% for d in drivers %}{% if d!="VER" %}<option value="{{ d }}">{{ d }}</option>{% endif %}{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label text-muted">Driver 2 (Red)</label>
+            <select name="driver2" class="form-select">
+                <option value="HAM" selected>HAM</option>
+                {% for d in drivers %}{% if d!="HAM" %}<option value="{{ d }}">{{ d }}</option>{% endif %}{% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-f1 w-100">ANALYZE DATA</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.querySelector('select[name="track"]').addEventListener('change', function() {
+        document.getElementById('raceInput').value = this.value;
+    });
+    document.getElementById('raceInput').value = document.querySelector('select[name="track"]').value;
+</script>
+
+{% if data %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card p-3 d-flex flex-row justify-content-between align-items-center" style="border-left: 5px solid #e10600;">
+            <div>
+                <h3 class="m-0 text-white">{{ data.race_name }}</h3>
+                <small class="text-muted">Analysis Session</small>
+            </div>
+            <div class="text-end">
+                <small class="text-muted">WINNER</small>
+                <h4 class="m-0 text-danger">{{ data.winner_info.name }}</h4>
+                <small>{{ data.winner_info.team }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body p-1">
+                <div id="telemetryChart" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body p-1">
+                <div id="paceChart" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var config = {displayModeBar: false, responsive: true};
+    
+    // 1. Handle Speed Trace Chart
+    var rawTelData = '{{ telemetryJSON | safe }}';
+    
+    if (rawTelData && rawTelData !== 'None') {
+        var telData = JSON.parse(rawTelData);
+        Plotly.newPlot('telemetryChart', telData, config);
+    } else {
+        document.getElementById('telemetryChart').innerHTML = 
+            '<div class="text-center text-secondary mt-5"><h5>Telemetry Data Unavailable</h5></div>';
+    }
+
+    // 2. Handle Pace Chart
+    var rawPaceData = '{{ paceJSON | safe }}';
+    
+    if (rawPaceData && rawPaceData !== 'None') {
+        var paceData = JSON.parse(rawPaceData);
+        Plotly.newPlot('paceChart', paceData, config);
+    } else {
+        document.getElementById('paceChart').innerHTML = 
+            '<div class="text-center text-secondary mt-5"><h5>Pace Data Unavailable</h5></div>';
+    }
+</script>
+{% endif %}
+{% endblock %}

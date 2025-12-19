@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-1 fw-bold">PIT STOP</h1>
+    <p class="lead text-uppercase" style="letter-spacing: 3px; color: #e10600;">Box, Box. We Have Data.</p>
+</div>
+<div class="row mt-4 justify-content-center">
+    <div class="col-md-5">
+        <div class="card h-100 text-center p-4">
+            <h3 class="card-title">Strategy Simulator</h3>
+            <p>Predict race pace, pit stops, and visualize circuit layouts.</p>
+            <a href="/simulator" class="btn btn-f1 mt-3">Launch Simulator</a>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card h-100 text-center p-4">
+            <h3 class="card-title">Telemetry Dashboard</h3>
+            <p>Compare driver vs driver gaps and lap times.</p>
+            <a href="/telemetry" class="btn btn-f1 mt-3">Analyze Telemetry</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

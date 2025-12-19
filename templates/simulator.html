@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Strategy Simulator</h2>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-4 h-100 border-0 bg-dark">
+            <h5 class="card-title text-muted mb-4">RACE CONFIG</h5>
+            <form method="POST" action="{{ url_for('simulator') }}">
+                <div class="mb-3">
+                    <label class="form-label text-white">Circuit</label>
+                    <select name="track" class="form-select bg-secondary text-white border-0">
+                        {% for t in tracks %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-white">Compound</label>
+                    <select name="compound" class="form-select bg-secondary text-white border-0">
+                        <option value="SOFT">Soft (C3-C5)</option>
+                        <option value="MEDIUM">Medium (C2-C4)</option>
+                        <option value="HARD">Hard (C1-C3)</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label text-white">Strategy</label>
+                    <select name="stops" class="form-select bg-secondary text-white border-0">
+                        <option value="1">1 Stop</option>
+                        <option value="2">2 Stops</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-f1 w-100 py-2">CALCULATE STRATEGY</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        {% if result %}
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center h-100 border-danger" style="border-top: 4px solid #e10600;">
+                    <h6 class="text-danger fw-bold text-uppercase">Total Race Time</h6>
+                    <h2 class="display-6 fw-bold text-white mt-2">{{ result.total_time_min }}</h2>
+                    <span class="fs-6 text-white-50">minutes</span>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center h-100 border-warning" style="border-top: 4px solid #ffc107;">
+                    <h6 class="text-warning fw-bold text-uppercase">Tyre Degradation</h6>
+                    <h2 class="display-6 fw-bold text-white mt-2">{{ result.degradation }}</h2>
+                    <span class="fs-6 text-white-50">seconds lost / lap</span>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center h-100 border-info" style="border-top: 4px solid #0dcaf0;">
+                    <h6 class="text-info fw-bold text-uppercase">Pit Stop Window</h6>
+                    <h4 class="fw-bold text-white mt-3">{{ result.stop_recommendation }}</h4>
+                    <span class="fs-6 text-white-50">Recommended Entry</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-2 mt-2">
+            <div id="mapChart" style="height: 500px;"></div>
+        </div>
+
+        <script>
+            // specific check to ensure mapJSON is valid before assigning
+            var rawData = '{{ mapJSON | safe }}';
+            
+            if (rawData && rawData !== 'None') {
+                var mapData = JSON.parse(rawData);
+                Plotly.newPlot('mapChart', mapData, {displayModeBar: false, staticPlot: true});
+            } else {
+                // Hides the spinner/empty div if data is missing
+                document.getElementById('mapChart').innerHTML = '<div class="text-center text-secondary mt-5"><h5>Track Map Unavailable</h5></div>';
+            }
+        </script>
+        
+        {% else %}
+            <div class="card p-5 text-center d-flex align-items-center justify-content-center h-100 bg-dark border-secondary">
+            <h3 class="text-white">Awaiting Race Configuration...</h3>
+            <p class="text-white-50">Select your track and strategy options to generate the circuit map and AI predictions.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
