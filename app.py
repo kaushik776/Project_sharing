@@ -8,7 +8,7 @@ from utils.f1_data import get_detailed_telemetry, TRACKS, DRIVERS, YEARS
 
 app = Flask(__name__)
 
-
+#hi
 @app.route('/')
 def home():
     """Renders the homepage of the PIT STOP application.
